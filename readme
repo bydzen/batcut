@@ -1,17 +1,22 @@
+Batcut is the battery cutter conversation mode with boolean number argument to
+set the charge limit.
+
 How to Install on Linux Machine
 
 Steps:
 1. Save the script as `batcut`.
-2. Make the script executable: chmod +x batcut
+2. Make the script executable:
+   chmod +x batcut
 3. Copy the script to a directory in your PATH (e.g., /usr/bin/):
    sudo cp batcut /usr/bin/
 
 Usage:
-batcut 1      # Enable conservation mode (limits battery charge to 60%)
-batcut 0      # Disable conservation mode (allows full battery charge)
+batcut 1            # Enable conservation mode (limits battery charge to 60%)
+batcut 0            # Disable conservation mode (allows full battery charge)
+batcut -s --status  # Show current conversation mode status
 
 Help:
-batcut -h     # Display help information
+batcut -h           # Display help information
 batcut --help
 
 Enjoy.
