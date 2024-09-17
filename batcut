@@ -8,13 +8,15 @@ show_help() {
     echo "Usage: batcut [OPTION] [VALUE]"
     echo
     echo "Options:"
-    echo "  0          Disable conservation mode (allow full battery charge)"
-    echo "  1          Enable conservation mode (limit battery to 60% charge)"
-    echo "  -h, --help Display this help message"
+    echo "  0               Disable conservation mode (allow full battery charge)"
+    echo "  1               Enable conservation mode (limit battery to 60% charge)"
+    echo "  -s, --status    Show current conservation mode status"
+    echo "  -h, --help      Display this help message"
     echo
     echo "Examples:"
-    echo "  batcut 1   Enable conservation mode"
-    echo "  batcut 0   Disable conservation mode"
+    echo "  batcut 1        Enable conservation mode"
+    echo "  batcut 0        Disable conservation mode"
+    echo "  batcut -s       Show current conservation mode status"
 }
 
 # Check for arguments
@@ -23,20 +25,37 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
-# Handle help option
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
-    exit 0
-fi
-
-# Handle conservation mode setting
-if [[ "$1" == "1" ]]; then
-    echo 1 | sudo tee "$CONSERVATION_MODE_PATH" > /dev/null
-    echo "Conservation mode enabled."
-elif [[ "$1" == "0" ]]; then
-    echo 0 | sudo tee "$CONSERVATION_MODE_PATH" > /dev/null
-    echo "Conservation mode disabled."
-else
-    echo "Error: Invalid argument '$1'. Use -h or --help for usage information."
-    exit 1
-fi
+# Handle options
+case "$1" in
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+    -s|--status)
+        if [[ -f "$CONSERVATION_MODE_PATH" ]]; then
+            status=$(cat "$CONSERVATION_MODE_PATH")
+            if [[ "$status" == "1" ]]; then
+                echo "Conservation mode is currently ENABLED."
+            elif [[ "$status" == "0" ]]; then
+                echo "Conservation mode is currently DISABLED."
+            else
+                echo "Unknown status: $status"
+            fi
+        else
+            echo "Error: Conservation mode file not found at $CONSERVATION_MODE_PATH."
+        fi
+        exit 0
+        ;;
+    1)
+        echo 1 | sudo tee "$CONSERVATION_MODE_PATH" > /dev/null
+        echo "Conservation mode enabled."
+        ;;
+    0)
+        echo 0 | sudo tee "$CONSERVATION_MODE_PATH" > /dev/null
+        echo "Conservation mode disabled."
+        ;;
+    *)
+        echo "Error: Invalid argument '$1'. Use -h or --help for usage information."
+        exit 1
+        ;;
+esac
